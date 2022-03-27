@@ -29,12 +29,20 @@ func publish(t *TargetFile, to string) error {
 
 func Copy(t *TargetFile, to string) error {
 	dst := filepath.Join(to, t.Name)
-	if len(dst) < 10 { // 防御，
-		return fmt.Errorf("path %s too short", dst)
-	}
-	_, err := os.Lstat(dst)
-	if !os.IsNotExist(err) {
-		return fmt.Errorf("path %s exist", dst)
+	dstStat, err := os.Lstat(dst)
+	if !os.IsNotExist(err) { // 文件存在
+		if dstStat.IsDir() != t.IsDir() { // 如果类型不匹配
+			return fmt.Errorf("目标类型不匹配：%s(dir=%t) != %s(dir=%t)", dst, dstStat.IsDir(), t.Path(), t.IsDir())
+		}
+		if dstStat.IsDir() && dstStat.IsDir() {
+			fmt.Println("dir exist: " + dst)
+			return nil
+		}
+		// 删除文件
+		err = os.Remove(dst)
+		if err != nil {
+			return err
+		}
 	}
 	if t.IsDir() { // 文件夹
 		fmt.Println("make dir: " + dst)
