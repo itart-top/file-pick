@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-const RWFlag = ".rw.for."
+const RWFlag = ".rw_for."
 
 type File struct {
 	Name string      // 文件名
