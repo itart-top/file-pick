@@ -49,8 +49,11 @@ func publishRun(args []string, env string, tags Tags) {
 		},
 	}
 	root.Children = GenTarget(root, tags)
-	if err = publish(root, args[1]); err != nil {
-		fmt.Println("publish error:", err)
+	for _, sub := range root.Children {
+		if err = publish(sub, args[1]); err != nil {
+			fmt.Println("publish error:", err)
+			panic(err)
+		}
 	}
 }
 
